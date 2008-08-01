@@ -1,0 +1,15 @@
+Source: glib
+Priority: extra
+Maintainer: ZorpOS Maintainers <zorpos@balabit.com>
+Build-Depends: debhelper (>= 5)
+Standards-Version: 3.7.2
+Section: libs
+
+Package: glib
+Architecture: any                                                                                                                                          
+Description: Glib dummy package for tgz2builder
+
+Package: glib-dev
+Architecture: any
+Description: Glib development files dummy package for tgz2builder.
+

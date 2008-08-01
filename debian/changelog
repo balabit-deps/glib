@@ -1,0 +1,13 @@
+glib (2.14.6.syslogng30) syslogng30; urgency=low
+
+  * Modified assembler instruction in gatomi.c,
+    from mpxchgq to mpxchg at line 264.
+
+ -- ZorpOS Maintainers <zorpos@balabit.com>  Tue, 17 Jun 2008 15:56:55 +0200
+
+glib (2.14.6.syslogng21) syslogng21; urgency=low
+
+  * Initial release. 
+
+ -- ZorpOS Maintainers <zorpos@balabit.com>  Mon, 21 Apr 2008 18:29:21 +0200
+

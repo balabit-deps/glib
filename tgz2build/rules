@@ -2,6 +2,13 @@
 STAMPDIR=tgz2build/stamps
 
 CONFIGURE_OPTS := --prefix $(ZBS_PREFIX) --enable-static --enable-shared --disable-gtk-doc
+CONFIGURE_CMD = ./configure
+
+
+ifneq (,$(findstring freebsd,$(ZBS_DIST)))
+  CONFIGURE_CMD = CPPFLAGS="-I/usr/local/include" LDFLAGS="-L/usr/local/lib -lintl" ./configure
+endif
+
 
 ifneq (,$(findstring solaris,$(ZBS_DIST)))
 # Under solaris we need this switch to be able to use iconv.
@@ -29,11 +36,7 @@ $(STAMPDIR)/stamp-setup:
 	touch $@
 
 configure: $(STAMPDIR)/stamp-configure
-	if test `uname -s` = "FreeBSD"; then
-		CPPFLAGS="-I/usr/local/include" LDFLAGS="-L/usr/local/lib -lintl" ./configure $(CONFIGURE_OPTS) 
-	else
-		./configure $(CONFIGURE_OPTS)
-	fi
+	$(CONFIGURE_CMD) $(CONFIGIRE_OPTS)
 	touch $@
 
 $(STAMPDIR)/stamp-configure: setup

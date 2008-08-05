@@ -6,7 +6,7 @@ CONFIGURE_CMD = ./configure
 
 
 ifneq (,$(findstring freebsd,$(ZBS_DIST)))
-  CONFIGURE_CMD = CPPFLAGS="-I/usr/local/include" LDFLAGS="-L/usr/local/lib -lintl" ./configure
+  CONFIGURE_CMD = CPPFLAGS="-I/usr/local/include" LDFLAGS="-L/usr/local/lib -lintl" ./configure $(CONFIGURE_OPTS) --with-libiconv=gnu
 endif
 
 
@@ -48,20 +48,22 @@ $(STAMPDIR)/stamp-build: configure
 install: $(STAMPDIR)/stamp-install
 $(STAMPDIR)/stamp-install: build
 	rm -rf $(ZBS_STAGE_DIR) || true
+	# Glib does not compile on HP-UX with a staging dir set
+	# NOTE: this fails at gobject relink
+	# now relink gobject
+	
 	if test `uname -s` != "HP-UX"; then
-		$(MAKE) install DESTDIR=$(ZBS_STAGE_DIR)
+		$(MAKE) install DESTDIR=$(ZBS_STAGE_DIR); 
 	else
-		# Glib does not compile on HP-UX with a staging dir set
-		# NOTE: this fails at gobject relink
-		$(MAKE) install DESTDIR=$(ZBS_STAGE_DIR) || true
-		# now relink gobject
+		$(MAKE) install DESTDIR=$(ZBS_STAGE_DIR) || true ;
 		(cd src; \
 		gcc -shared -fPIC -Wl,+h -Wl,libgobject-2.0.sl.1400 -Wl,+b -Wl,/opt/syslog-ng/lib -o .libs/libgobject-2.0.sl.1400.6 \
 			.libs/gboxed.o .libs/gclosure.o .libs/genums.o .libs/gobject.o .libs/gparam.o .libs/gparamspecs.o \
 			.libs/gsignal.o .libs/gsourceclosure.o .libs/gtype.o .libs/gtypemodule.o .libs/gtypeplugin.o .libs/gvalue.o \
 			.libs/gvaluearray.o .libs/gvaluetransform.o .libs/gvaluetypes.o  \
-			$(ZBS_STAGE_DIR)/$(ZBS_PREFIX)/libglib-2.0.sl -L/usr/local/lib /usr/local/lib/libintl.sl -lc
+			$(ZBS_STAGE_DIR)/$(ZBS_PREFIX)/libglib-2.0.sl -L/usr/local/lib /usr/local/lib/libintl.sl -lc );
 	fi
+	
 	touch $@
 clean:
 	rm -rf tgz2build/stamps || true

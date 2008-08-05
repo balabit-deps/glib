@@ -29,7 +29,11 @@ $(STAMPDIR)/stamp-setup:
 	touch $@
 
 configure: $(STAMPDIR)/stamp-configure
-	./configure $(CONFIGURE_OPTS)
+	if test `uname -s` = "FreeBSD"; then
+		CPPFLAGS="-I/usr/local/include" LDFLAGS="-L/usr/local/lib -lintl" ./configure $(CONFIGURE_OPTS) 
+	else
+		./configure $(CONFIGURE_OPTS)
+	fi
 	touch $@
 
 $(STAMPDIR)/stamp-configure: setup

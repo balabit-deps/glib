@@ -483,8 +483,8 @@ esac
 
 dnl Initialize libtool
 AM_DISABLE_STATIC
-AC_LIBTOOL_WIN32_DLL
-AM_PROG_LIBTOOL
+LT_INIT(win32-dll)
+LT_OUTPUT()
 
 if test "x$GCC" = "xyes"; then
   case " $CFLAGS " in

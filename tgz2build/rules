@@ -2,12 +2,8 @@
 STAMPDIR=tgz2build/stamps
 
 CONFIGURE_OPTS := --prefix $(ZBS_PREFIX) --enable-static --enable-shared --disable-gtk-doc
-CONFIGURE_CMD = ./configure
 
 
-ifneq (,$(findstring freebsd,$(ZBS_DIST)))
-  CONFIGURE_CMD = CPPFLAGS="-I/usr/local/include" LDFLAGS="-L/usr/local/lib -lintl" ./configure $(CONFIGURE_OPTS) --with-libiconv=gnu
-endif
 
 
 ifneq (,$(findstring solaris,$(ZBS_DIST)))
@@ -25,10 +21,16 @@ ifneq (,$(findstring aix,$(ZBS_DIST)))
   CONFIGURE_OPTS += --with-libiconv=native
 endif
 
+CONFIGURE_CMD = ./configure $(CONFIGURE_OPTS)
+
+ifneq (,$(findstring freebsd,$(ZBS_DIST)))
+  CONFIGURE_CMD = CPPFLAGS="-I/usr/local/include" LDFLAGS="-L/usr/local/lib -lintl" ./configure $(CONFIGURE_OPTS) --with-libiconv=gnu
+endif
+
 
 all: binary
 
-binary: setup configure build install
+binary: $(STAMPDIR)/stamp-setup $(STAMPDIR)/stamp-configure $(STAMPDIR)/stamp-build $(STAMPDIR)/stamp-install
 
 setup:  $(STAMPDIR)/stamp-setup
 $(STAMPDIR)/stamp-setup:
@@ -36,35 +38,21 @@ $(STAMPDIR)/stamp-setup:
 	touch $@
 
 configure: $(STAMPDIR)/stamp-configure
-	$(CONFIGURE_CMD) $(CONFIGIRE_OPTS)
+$(STAMPDIR)/stamp-configure: $(STAMPDIR)/stamp-setup
+	$(CONFIGURE_CMD)
 	touch $@
 
-$(STAMPDIR)/stamp-configure: setup
 
 build:  $(STAMPDIR)/stamp-build
-$(STAMPDIR)/stamp-build: configure 
+$(STAMPDIR)/stamp-build: $(STAMPDIR)/stamp-configure 
 	$(MAKE) 
 	touch $@
 install: $(STAMPDIR)/stamp-install
-$(STAMPDIR)/stamp-install: build
+$(STAMPDIR)/stamp-install: $(STAMPDIR)/stamp-build
 	rm -rf $(ZBS_STAGE_DIR) || true
-	# Glib does not compile on HP-UX with a staging dir set
-	# NOTE: this fails at gobject relink
-	# now relink gobject
-	
-	if test `uname -s` != "HP-UX"; then \
-		$(MAKE) install DESTDIR=$(ZBS_STAGE_DIR); \ 
-	else \
-		$(MAKE) install DESTDIR=$(ZBS_STAGE_DIR) || true ; \
-		(cd src; \
-		gcc -shared -fPIC -Wl,+h -Wl,libgobject-2.0.sl.1400 -Wl,+b -Wl,/opt/syslog-ng/lib -o .libs/libgobject-2.0.sl.1400.6 \
-			.libs/gboxed.o .libs/gclosure.o .libs/genums.o .libs/gobject.o .libs/gparam.o .libs/gparamspecs.o \
-			.libs/gsignal.o .libs/gsourceclosure.o .libs/gtype.o .libs/gtypemodule.o .libs/gtypeplugin.o .libs/gvalue.o \
-			.libs/gvaluearray.o .libs/gvaluetransform.o .libs/gvaluetypes.o  \
-			$(ZBS_STAGE_DIR)/$(ZBS_PREFIX)/libglib-2.0.sl -L/usr/local/lib /usr/local/lib/libintl.sl -lc ); \
-	fi
-	
+	$(MAKE) install DESTDIR=$(ZBS_STAGE_DIR) \
 	touch $@
+
 clean:
 	rm -rf tgz2build/stamps || true
 	rm -rf tgz2build/staging || true

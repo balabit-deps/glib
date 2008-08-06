@@ -261,7 +261,7 @@ g_atomic_pointer_compare_and_exchange (volatile gpointer *atomic,
 {
   gpointer result;
  
-  __asm__ __volatile__ ("lock; cmpxchgq %q2, %1"
+  __asm__ __volatile__ ("lock; cmpxchg %q2, %1"
 			: "=a" (result), "=m" (*atomic)
 			: "r" (newval), "m" (*atomic), "0" (oldval)); 
 

@@ -2,9 +2,14 @@
 STAMPDIR=tgz2build/stamps
 
 CONFIGURE_OPTS := --prefix $(ZBS_PREFIX) --enable-static --enable-shared --disable-gtk-doc
+CONFIGURE_CMD = ./configure $(CONFIGURE_OPTS)
 
 ifneq (,$(findstring solaris,$(ZBS_DIST)))
-  CONFIGURE_OPTS += --with-libiconv=native
+	ifneq (,$(findstring amd64,$(ZBS_ARCH)))
+		CONFIGURE_CMD  = ./configure $(CONFIGURE_OPTS) --host=x86_64
+	else
+  		CONFIGURE_OPTS += --with-libiconv=native
+	endif
 endif
 
 ifneq (,$(findstring hpux,$(ZBS_DIST)))
@@ -19,8 +24,6 @@ ifneq (,$(findstring aix,$(ZBS_DIST)))
   #Libtool won't install .so files without this...
   CONFIGURE_CMD = LDFLAGS="-Wl,-brtl" ./configure $(CONFIGURE_OPTS)
 endif
-
-CONFIGURE_CMD = ./configure $(CONFIGURE_OPTS)
 
 ifneq (,$(findstring freebsd,$(ZBS_DIST)))
   CONFIGURE_CMD = CPPFLAGS="-I/usr/local/include" LDFLAGS="-L/usr/local/lib -lintl" ./configure $(CONFIGURE_OPTS) --with-libiconv=gnu

@@ -2,22 +2,26 @@
 STAMPDIR=tgz2build/stamps
 
 CONFIGURE_OPTS := --prefix $(ZBS_PREFIX) --enable-static --enable-shared --disable-gtk-doc --with-libiconv=gnu
-CONFIGURE_CMD = LDFLAGS="-L/opt/syslog-ng/lib" CFLAGS="-I/opt/syslog-ng/include" ./configure $(CONFIGURE_OPTS)
+CONFIGURE_CMD = ./configure $(CONFIGURE_OPTS)
 LD_LIB =
 
 ifneq (,$(findstring solaris,$(ZBS_DIST)))
 	ifneq (,$(findstring amd64,$(ZBS_ARCH)))
-		#the following export is a very dirty hack. But the make needs this PATH.
-		CONFIGURE_CMD  = ./configure $(CONFIGURE_OPTS)
+		# NOTE:
+		#
+		# This is probably not needed anymore as zbs-build.sh
+		# exports LD_LIBRARY_PATH with this value on Solaris/amd64.
+		# This essentially overrides the value given by
+		# zbs-build.sh. Bazsi (2008.08.29)
+		#
 		LD_LIB= LD_LIBRARY_PATH="/usr/sfw/lib/amd64"
 	endif
 endif
 
 ifneq (,$(findstring aix,$(ZBS_DIST)))
-# Under hpux we need this switch to be able to use iconv.
-  #dirty hack for .so versioning in AIX.
-  #Libtool won't install .so files without this...
-  CONFIGURE_CMD = LDFLAGS="-L/opt/syslog-ng/lib -Wl,-brtl" ./configure $(CONFIGURE_OPTS)
+  # AIX requires -brtl linker option in order to produce .so files (see
+  # specwiki AIX notes)
+  CONFIGURE_CMD = LDFLAGS="-Wl,-brtl $(LDFLAGS)" ./configure $(CONFIGURE_OPTS)
 endif
 
 all: binary

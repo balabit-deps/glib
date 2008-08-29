@@ -1,8 +1,8 @@
 #!/usr/local/bin/make -f                                                                                                                                           
 STAMPDIR=tgz2build/stamps
 
-CONFIGURE_OPTS := --prefix $(ZBS_PREFIX) --enable-static --enable-shared --disable-gtk-doc
-CONFIGURE_CMD = ./configure $(CONFIGURE_OPTS)
+CONFIGURE_OPTS := --prefix $(ZBS_PREFIX) --enable-static --enable-shared --disable-gtk-doc --with-libiconv=gnu
+CONFIGURE_CMD = LDFLAGS="-L/opt/syslog-ng/lib" CFLAGS="-I/opt/syslog-ng/include" ./configure $(CONFIGURE_OPTS)
 LD_LIB =
 
 ifneq (,$(findstring solaris,$(ZBS_DIST)))
@@ -10,28 +10,15 @@ ifneq (,$(findstring solaris,$(ZBS_DIST)))
 		#the following export is a very dirty hack. But the make needs this PATH.
 		CONFIGURE_CMD  = ./configure $(CONFIGURE_OPTS)
 		LD_LIB= LD_LIBRARY_PATH="/usr/sfw/lib/amd64"
-	else
-  		CONFIGURE_OPTS += --with-libiconv=native
 	endif
-endif
-
-ifneq (,$(findstring hpux,$(ZBS_DIST)))
-# Under hpux we need this switch to be able to use iconv.
-  CONFIGURE_OPTS += --with-libiconv
 endif
 
 ifneq (,$(findstring aix,$(ZBS_DIST)))
 # Under hpux we need this switch to be able to use iconv.
-  CONFIGURE_OPTS += --with-libiconv=native
   #dirty hack for .so versioning in AIX.
   #Libtool won't install .so files without this...
-  CONFIGURE_CMD = LDFLAGS="-Wl,-brtl" ./configure $(CONFIGURE_OPTS)
+  CONFIGURE_CMD = LDFLAGS="-L/opt/syslog-ng/lib -Wl,-brtl" ./configure $(CONFIGURE_OPTS)
 endif
-
-ifneq (,$(findstring freebsd,$(ZBS_DIST)))
-  CONFIGURE_CMD = CPPFLAGS="-I/usr/local/include" LDFLAGS="-L/usr/local/lib -lintl" ./configure $(CONFIGURE_OPTS) --with-libiconv=gnu
-endif
-
 
 all: binary
 

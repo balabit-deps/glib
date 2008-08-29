@@ -1,3 +1,9 @@
+glib (2.14.6-1.syslogng30) syslogng30; urgency=low
+
+  * Added debug packages.
+
+ -- ZorpOS Maintainers <zorpos@balabit.com>  Thu, 28 Aug 2008 14:46:04 +0200
+
 glib (2.14.6.syslogng30) syslogng30; urgency=low
 
   * Modified assembler instruction in gatomi.c,

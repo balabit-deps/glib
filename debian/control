@@ -13,3 +13,11 @@ Package: glib-dev
 Architecture: any
 Description: Glib development files dummy package for tgz2builder.
 
+Package: glib-dbg
+Architecture: any                                                                                                                                          
+Description: Glib dummy package for tgz2builder. Debug.
+
+Package: glib-dev-dbg
+Architecture: any
+Description: Glib development files dummy package for tgz2builder. Debug.
+

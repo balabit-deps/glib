@@ -1,5 +1,7 @@
 ## Process this file with automake to produce Makefile.in
 
+ACLOCAL_AMFLAGS=-I m4macros
+
 AUTOMAKE_OPTIONS = 1.7
 
 SUBDIRS = . m4macros glib gobject gmodule gthread tests build po docs

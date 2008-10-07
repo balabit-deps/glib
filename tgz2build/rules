@@ -1,7 +1,7 @@
 #!/usr/local/bin/make -f                                                                                                                                           
 STAMPDIR=tgz2build/stamps
 
-CONFIGURE_OPTS := --prefix $(ZBS_PREFIX) --enable-static --enable-shared --disable-gtk-doc --with-libiconv=gnu
+CONFIGURE_OPTS := --prefix $(ZBS_PREFIX) --disable-static --enable-shared --disable-gtk-doc --with-libiconv=gnu
 CONFIGURE_CMD = ./configure $(CONFIGURE_OPTS)
 LD_LIB =
 
@@ -21,7 +21,7 @@ endif
 ifneq (,$(findstring aix,$(ZBS_DIST)))
   # AIX requires -brtl linker option in order to produce .so files (see
   # specwiki AIX notes)
-  CONFIGURE_CMD = LDFLAGS="-Wl,-brtl $(LDFLAGS)" ./configure $(CONFIGURE_OPTS)
+  #CONFIGURE_CMD = LDFLAGS="-Wl,-brtl $(LDFLAGS)" ./configure $(CONFIGURE_OPTS)
 endif
 
 all: binary
@@ -35,7 +35,7 @@ $(STAMPDIR)/stamp-setup:
 
 configure: $(STAMPDIR)/stamp-configure
 $(STAMPDIR)/stamp-configure: $(STAMPDIR)/stamp-setup
-	$(CONFIGURE_CMD)
+	$(SHELL) $(CONFIGURE_CMD)
 	touch $@
 
 

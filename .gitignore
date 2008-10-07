@@ -13,3 +13,15 @@ aclocal.m4
 ltmain.sh
 autom4te.cache
 gtk-doc.make
+m4macros/gtk-doc.m4
+m4macros/libtool.m4
+m4macros/ltoptions.m4
+m4macros/ltsugar.m4
+m4macros/ltversion.m4
+m4macros/lt~obsolete.m4
+*~
+typescript
+COPYING
+INSTALL
+README
+config.status.lineno

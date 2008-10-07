@@ -5,7 +5,6 @@ AC_PREREQ(2.54)
 dnl ***********************************
 dnl *** include special GLib macros ***
 dnl ***********************************
-
 m4_define(glib_configure_in)
 m4_include(acglib.m4)dnl 	 
 m4_include(glib/libcharset/codeset.m4)dnl 	 
@@ -58,9 +57,15 @@ AC_CONFIG_SRCDIR([glib/glib.h])
 cflags_set=${CFLAGS+set}
 
 AM_INIT_AUTOMAKE([no-define])
+AC_CONFIG_MACRO_DIR([m4macros])
 
 # Specify a configuration file
 AM_CONFIG_HEADER([config.h])
+
+dnl Initialize libtool
+AM_DISABLE_STATIC
+AC_PROG_LIBTOOL
+LT_INIT
 
 
 GLIB_MAJOR_VERSION=glib_major_version
@@ -480,11 +485,6 @@ case $with_libiconv in
     AC_DEFINE(USE_LIBICONV_NATIVE, 1, [Using a native implementation of iconv in a separate library])
     ;;
 esac
-
-dnl Initialize libtool
-AM_DISABLE_STATIC
-LT_INIT(win32-dll)
-LT_OUTPUT()
 
 if test "x$GCC" = "xyes"; then
   case " $CFLAGS " in
@@ -1197,7 +1197,11 @@ if test x"$glib_native_win32" = xyes; then
   G_MODULE_LDFLAGS=
 else
   export SED
-  G_MODULE_LDFLAGS=`(./libtool --config; echo eval echo \\$export_dynamic_flag_spec) | sh`
+  case `uname -s` in
+  	Linux|FreeBSD)
+	  G_MODULE_LDFLAGS=`(./libtool --config; echo eval echo \\$export_dynamic_flag_spec) | sh`
+	  ;;
+  esac
 fi
 dnl G_MODULE_IMPL= don't reset, so cmd-line can override
 G_MODULE_NEED_USCORE=0

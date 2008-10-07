@@ -1,8 +1,8 @@
 opt/syslog-ng/include/*
 opt/syslog-ng/lib/lib*.la*
-opt/syslog-ng/lib/lib*.a*
 opt/syslog-ng/lib/glib-2.0/*
 opt/syslog-ng/lib/pkgconfig/*
+opt/syslog-ng/lib/*.s[l,o]
 opt/syslog-ng/share/aclocal/*
 opt/syslog-ng/share/glib-2.0/*
 opt/syslog-ng/share/man/man1/glib-genmarshal.1*

@@ -1,3 +1,15 @@
+glib (2.14.6-3.syslogng30) syslogng30; urgency=low
+
+  * Glib now uses libtool 2.x to create libs properly on any platform.
+
+ -- Tamas Pal <folti@balabit.com>  Tue, 07 Oct 2008 13:48:01 +0200
+
+glib (2.14.6-2.syslogng30) syslogng30; urgency=low
+
+  * Changed AIX packaging.
+
+ -- Tamas Pal <folti@balabit.com>  Thu, 18 Sep 2008 17:45:46 +0200
+
 glib (2.14.6-1.syslogng30) syslogng30; urgency=low
 
   * Added debug packages.

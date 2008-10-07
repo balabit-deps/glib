@@ -1,4 +1,5 @@
 #!/bin/sh
+set -x 
 # Run this to generate all the initial makefiles, etc.
 
 srcdir=`dirname $0`
@@ -14,9 +15,9 @@ DIE=0
 
 have_libtool=false
 if libtoolize --version < /dev/null > /dev/null 2>&1 ; then
-	libtool_version=`libtoolize --version | sed 's/^[^0-9]*\([0-9.][0-9.]*\).*/\1/'`
+	libtool_version=`libtoolize --version | sed 's/^[^0-9]*\([0-9.][0-9.]*\).*/\1/'| head -1`
 	case $libtool_version in
-	    1.4*|1.5*)
+	    1.4*|1.5*|2.*)
 		have_libtool=true
 		;;
 	esac
@@ -79,16 +80,28 @@ rm -rf autom4te.cache
 # regenerated from their corresponding *.in files by ./configure anyway.
 touch README INSTALL
 
-$ACLOCAL $ACLOCAL_FLAGS || exit $?
+libtoolize --force --copy --install || exit $?
 
-libtoolize --force || exit $?
-gtkdocize || exit $?
+$ACLOCAL -I /opt/libtool/share/aclocal -I m4macros --verbose || exit $?
+
+gtkdocize --copy || exit $?
 
 autoheader || exit $?
 
-$AUTOMAKE --add-missing || exit $?
-autoconf || exit $?
+$AUTOMAKE --add-missing --copy  --force-missing || exit $?
+autoconf --verbose --force --trace=_LT_CHECK_SHELL_FEATURES -i || exit $?
 cd $ORIGDIR || exit $?
+
+case $libtool_version in
+    2.*)
+	# need to check for some autoconf black magic. Sometimes it fails to
+	# add AC_PROG_LIBTOOL from the proper .m4 ...
+	if ! grep -q 'lt_unset=' $srcdir/configure; then
+		echo "$0: libtool configuration failure"
+		exit 1
+	fi
+	;;
+esac
 
 if test -z "$AUTOGEN_SUBDIR_MODE"; then
         $srcdir/configure --enable-maintainer-mode $AUTOGEN_CONFIGURE_ARGS "$@" || exit $?

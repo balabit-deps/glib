@@ -2,9 +2,20 @@
 
 cmd=$1
 shift
+
+AM_VERSION=-1.7
+
 case "$cmd" in
   bootstrap)
-    echo "No bootstrap needed"
+    set -x
+    set -e
+    touch README INSTALL
+    libtoolize --force --copy --install
+    aclocal${AM_VERSION} -I m4
+    gtkdocize --copy
+    autoheader
+    automake${AM_VERSION} --add-missing --copy  --force-missing --foreign
+    autoconf --force  -i
     ;;
   configure)
     ./configure $@

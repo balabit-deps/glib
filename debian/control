@@ -1,7 +1,7 @@
 Source: glib
 Priority: extra
 Maintainer: ZorpOS Maintainers <zorpos@balabit.com>
-Build-Depends: debhelper (>= 5)
+Build-Depends: debhelper (>= 5), automake1.7
 Standards-Version: 3.7.2
 Section: libs
 

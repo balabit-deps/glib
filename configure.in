@@ -62,11 +62,6 @@ AC_CONFIG_MACRO_DIR([m4])
 # Specify a configuration file
 AM_CONFIG_HEADER([config.h])
 
-dnl Initialize libtool
-AM_DISABLE_STATIC
-AC_PROG_LIBTOOL
-LT_INIT
-
 
 GLIB_MAJOR_VERSION=glib_major_version
 GLIB_MINOR_VERSION=glib_minor_version
@@ -485,6 +480,13 @@ case $with_libiconv in
     AC_DEFINE(USE_LIBICONV_NATIVE, 1, [Using a native implementation of iconv in a separate library])
     ;;
 esac
+
+dnl Initialize libtool
+AM_DISABLE_STATIC
+AC_PROG_LIBTOOL
+LT_INIT(win32-dll)
+LT_OUTPUT()
+
 
 if test "x$GCC" = "xyes"; then
   case " $CFLAGS " in

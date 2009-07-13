@@ -1,3 +1,13 @@
+glib (2.14.6-4.syslogng30) syslogng30; urgency=low
+
+  * Use balabit-build for ZWA local compilations.
+  * Cleaned up the use of m4 macro search path.
+  * Use automake1.7 explicitly
+  * Fixed an autoconf warning about misnamed cache variable.
+  * Don't install documentation on our build farm.
+
+ -- Balazs Scheidler <bazsi@balabit.com>  Mon, 13 Jul 2009 14:48:53 +0200
+
 glib (2.14.6-3.syslogng30) syslogng30; urgency=low
 
   * Glib now uses libtool 2.x to create libs properly on any platform.

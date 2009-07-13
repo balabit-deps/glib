@@ -13,9 +13,13 @@ case "$cmd" in
     libtoolize --force --copy --install
     aclocal${AM_VERSION} -I m4
     gtkdocize --copy
+    # wipe out doc generation as it does not work on all platforms
+    sed -i -e 's/^install-data-local:/no-\0/' gtk-doc.make
+
     autoheader
     automake${AM_VERSION} --add-missing --copy  --force-missing --foreign
     autoconf --force  -i
+
     ;;
   configure)
     ./configure $@

@@ -57,7 +57,7 @@ AC_CONFIG_SRCDIR([glib/glib.h])
 cflags_set=${CFLAGS+set}
 
 AM_INIT_AUTOMAKE([no-define])
-AC_CONFIG_MACRO_DIR([m4macros])
+AC_CONFIG_MACRO_DIR([m4])
 
 # Specify a configuration file
 AM_CONFIG_HEADER([config.h])

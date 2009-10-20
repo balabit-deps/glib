@@ -6,6 +6,13 @@ shift
 AM_VERSION=-1.7
 
 case "$cmd" in
+  build-exclude-list|dist-exclude-list)
+    ## These lists can be used to delegate build-time and dist-time exclude lists
+    ## For example (syslog-ng-agent):
+    ##
+    ##    echo "out obj *.aqt *.ncb *.suo *.vcproj.*.user"
+    ##
+    ;;
   bootstrap)
     set -x
     set -e

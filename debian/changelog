@@ -1,4 +1,4 @@
-glib (2.14.6-5.syslogng30) syslogng30; urgency=low
+glib (2.14.6-5.syslogng30) syslogngdeps10; urgency=low
 
   * Updated build system.
   * tgz2build no longer barfs on older linux distributions because of gatomic

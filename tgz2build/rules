@@ -24,6 +24,9 @@ ifneq (,$(findstring aix,$(ZBS_DIST)))
   #CONFIGURE_CMD = LDFLAGS="-Wl,-brtl $(LDFLAGS)" ./configure $(CONFIGURE_OPTS)
 endif
 
+ifneq (,$(findstring i386,$(ZBS_ARCH)))
+	CONFIGURE_OPTS+= --build=$(ZBS_ARCH)
+endif
 all: binary
 
 binary: $(STAMPDIR)/stamp-setup $(STAMPDIR)/stamp-configure $(STAMPDIR)/stamp-build $(STAMPDIR)/stamp-install

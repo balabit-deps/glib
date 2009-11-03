@@ -6,7 +6,7 @@ shift
 AM_VERSION=-1.7
 
 case "$cmd" in
-  build-exclude-list|dist-exclude-list)
+  build-exclude-list|dist-exclude-list|prepare-dist)
     ## These lists can be used to delegate build-time and dist-time exclude lists
     ## For example (syslog-ng-agent):
     ##

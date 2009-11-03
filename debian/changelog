@@ -1,3 +1,11 @@
+glib (2.14.6-5.syslogng30) syslogng30; urgency=low
+
+  * Updated build system.
+  * tgz2build no longer barfs on older linux distributions because of gatomic
+    has unsupported asm inserts.
+
+ -- Tamas Pal <folti@balabit.com>  Tue, 03 Nov 2009 14:19:38 +0100
+
 glib (2.14.6-4.syslogng30) syslogng30; urgency=low
 
   * Use balabit-build for ZWA local compilations.

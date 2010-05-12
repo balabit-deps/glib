@@ -1,0 +1,15 @@
+prefix=c:/usr
+exec_prefix=${prefix}/bin
+libdir=${prefix}/lib
+includedir=${prefix}/include
+
+glib_genmarshal=glib-genmarshal
+gobject_query=gobject-query
+glib_mkenums=glib-mkenums
+
+Name: GLib
+Description: C Utility Library
+Version: @GLIB_VERSION@
+Libs: -L${libdir} -lglib-2.0 -lintl -liconv
+Cflags: -I${includedir}/glib-2.0 -I${includedir}/glib-2.0/glib -I${libdir}/glib-2.0/include
+

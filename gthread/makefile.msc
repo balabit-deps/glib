@@ -1,0 +1,35 @@
+## Makefile for building the gthread dll with Microsoft C
+## Use: nmake -f makefile.msc install
+
+TOP = ..\..
+
+!INCLUDE ..\build\win32\make.msc
+
+################################################################
+
+INCLUDES = -FImsvc_recommended_pragmas.h -I .. -I . -I ..\glib
+DEFINES = -DHAVE_CONFIG_H -D"G_LOG_DOMAIN=\"GThread\"" -DNDEBUG $(DLLDEFINES)
+all : \
+	libgthread-2.0-0.dll
+
+gthread_OBJECTS = \
+	gthread-impl.obj
+
+gthread-impl.obj : gthread-impl.c gthread-win32.c
+	$(CC) -c $(CFLAGS) gthread-impl.c
+
+gthread.res : gthread.rc
+	rc -DBUILDNUMBER=0 -r -fo gthread.res gthread.rc
+
+libgthread-2.0-0.dll : $(gthread_OBJECTS) gthread.def gthread.res
+	$(LINKDLL)  /OUT:$@ $(gthread_OBJECTS) gthread.res \
+	..\glib\glib-2.0.lib $(DEPCLIBS) user32.lib $(LINKEROPTS) /implib:gthread-2.0.lib /def:gthread.def $(LDFLAGS)
+	mt.exe -nologo -manifest $@.manifest -outputresource:$@;1
+## Makefile for building the gthread dll with Microsoft C
+## Use: nmake -f makefile.msc install
+
+TOP = ..\..
+
+!INCLUDE ..\build\win32\make.msc
+
+################################################################

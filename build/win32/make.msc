@@ -6,11 +6,12 @@
 # Debug builds shoud link with msvcrtd release build with msvcrt.
 !IFNDEF DEBUG
 # Full optimization:
-OPTIMIZE = -Ox
-CRUNTIME = -MD
+OPTIMIZE = 
+# -Ox
+CRUNTIME = -MD /O2
 # Line number debug info only
-DEBUGINFO = -Zd
-LINKDEBUG =
+DEBUGINFO = -Zi -DG_ENABLE_DEBUG=1
+LINKDEBUG = /debug /MAP /MAPINFO:EXPORTS
 !ELSE
 # Debugging:
 OPTIMIZE = 
@@ -22,7 +23,7 @@ LINKDEBUG = /debug /nodefaultlib:msvcrt.lib
 LDFLAGS = /link /machine:ix86 $(LINKDEBUG)
 
 !IFNDEF TOP
-TOP = ..
+TOP = $(WINDEPS_ROOT)
 !ENDIF
 
 # paths and version numbers
@@ -63,7 +64,7 @@ GIMP_CFLAGS = -I $(GIMP)
 GIMP_PLUGIN_LIBS = $(GIMP)\libgimp\gimp-$(GIMP_VER).lib $(GIMP)\libgimp\gimpui-$(GIMP_VER).lib
 
 # overide definition to use it as callable path
-GLIB = $(TOP)\glib
+GLIB = $(TOP)\
 
 GLIB_CFLAGS = -I $(GLIB) -I $(GLIB)\glib -I $(GLIB)\gmodule $(INTL_CFLAGS)
 GLIB_LIBS = $(GLIB)\glib\glib-$(GLIB_VER).lib $(GLIB)\gmodule\gmodule-$(GLIB_VER).lib $(GLIB)\gobject\gobject-$(GLIB_VER).lib
@@ -91,20 +92,20 @@ GTKGLAREA_LIBS = $(GTKGLAREA)\gtkgl\gtkgl-$(GTKGLAREA_VER).lib
 LIBART_CFLAGS = -I$(LIBART)\.. -FIlibart_lgpl/art_config.h
 LIBART_LIBS = $(LIBART)\libart.lib
 
-INTL_CFLAGS = -I $(INTL)
-INTL_LIBS = $(INTL)\intl.lib 
+INTL_CFLAGS = -I $(INTL)\include
+INTL_LIBS = $(INTL)\lib\intl_d.lib 
 
-LIBICONV_CFLAGS = -I $(LIBICONV)\include
-LIBICONV_LIBS = $(LIBICONV)\lib\iconv.lib
+LIBICONV_CFLAGS = -I $(LIBICONV)\include\iconv
+LIBICONV_LIBS = $(LIBICONV)\lib\libiconv_d.lib
 
-LIBXML_CFLAGS = -I $(LIBXML)
-LIBXML_LIBS = $(LIBXML)\xml-$(LIBXML_VER).lib
+LIBXML_CFLAGS = -I $(LIBXML)/include/libxml
+LIBXML_LIBS = $(LIBXML)\lib\libxml2.lib
 
-LIBXML2_CFLAGS = $(LIBICONV_CFLAGS) -I $(LIBXML2)\include
-LIBXML2_LIBS = $(LIBXML2)\libxml2.lib
+LIBXML2_CFLAGS = $(LIBICONV_CFLAGS) -I $(LIBXML2)\include\libxml
+LIBXML2_LIBS = $(LIBXML2)\lib\libxml2_d.lib
 
-LIBXSLT_CFLAGS = -I $(LIBXSLT)
-LIBXSLT_LIBS = $(LIBXSLT)\libxslt\libxslt.lib
+LIBXSLT_CFLAGS = -I $(LIBXSLT)\inclue\libxslt
+LIBXSLT_LIBS = $(LIBXSLT)\libxslt\libxslt_d.lib
 
 JPEG_CFLAGS = -I $(JPEG)
 JPEG_LIBS = $(JPEG)\libjpeg.lib
@@ -140,7 +141,10 @@ ZLIB_LIBS = $(ZLIB)\zlib.lib
 # Compiler to use.
 
 CCOMPILER = cl
-CC = $(CCOMPILER) -G5 -GF $(CRUNTIME) -W3 -nologo
+CC = $(CCOMPILER) -GF $(CRUNTIME) -W3 -nologo
+LINKOPTS=/OPT:REF /OPT:ICF $(LINKDEBUG) /MACHINE:x86
+LINKER=link.exe -nologo $(LINKOPTS)
+LINKDLL=$(LINKER) /DLL
 
 ################
 # The including makefile should define INCLUDES, DEFINES and
@@ -149,7 +153,19 @@ CC = $(CCOMPILER) -G5 -GF $(CRUNTIME) -W3 -nologo
 # GLIB_CFLAGS, GTK_CFLAGS etc corresponding to what other modules we
 # depend on.
 
-CFLAGS = $(OPTIMIZE) $(DEBUGINFO) $(INCLUDES) $(DEFINES) $(DEPCFLAGS)
+DLLDEFINES= /D "_USRDLL" \
+	/D "_WINDLL"
+
+CFLAGS = $(OPTIMIZE) $(DEBUGINFO) $(INCLUDES) $(DEFINES) $(DEPCFLAGS) \
+	/D "_WINDOWS" \
+	/D "WIN32" \
+	/DG_DISABLE_DEPRECATED \
+	/FD \
+	/EHsc \
+	/Gd \
+	/TC \
+	/W3 \
+	/D "HAVE_CONFIG_H"
 
 .c.i :
 	$(CC) $(CFLAGS) -E $< >$@

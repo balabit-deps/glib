@@ -1,6 +1,5 @@
-TOP = ..\..\..\..
-
-!INCLUDE $(TOP)\glib\build\win32\make.msc
+TOP = ..\..\..
+!INCLUDE $(TOP)\build\win32\make.msc
 
 dirent_OBJECTS = dirent.obj wdirent.obj
 

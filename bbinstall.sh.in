@@ -1,0 +1,49 @@
+#!/bin/sh
+
+set -e
+TARGET=@TARGET@
+if [ -z "$TARGET" ] || echo $TARGET | grep -q '^@'; then
+  TARGET=/cygdrive/c/usr
+fi
+
+find=/usr/bin/find
+
+mkdir -p $TARGET/bin $TARGET/lib $TARGET/lib/pkgconfig
+
+$find . -name \*.dll -or -name \*.pdb -or -name \*.exe -or -name \*.manifest | grep -vE '(vc80.pdb|tests)' | xargs -i% install -v % $TARGET/bin
+
+install -m 0755 -v gobject/glib-mkenums $TARGET/bin
+
+$find winbuild -name \*.pc | xargs -i% install -v % $TARGET/lib/pkgconfig
+
+$find . -name \*.lib | grep -E '/(glib|gobject|gthread|gmodule)-2' | xargs -i% install -v % $TARGET/lib
+mkdir -p \
+  $TARGET/include/glib-2.0/gobject \
+  $TARGET/include/glib-2.0/glib \
+  $TARGET/include/glib-2.0/gmodule \
+  $TARGET/lib/glib-2.0/include/
+install -v gobject/gobjectnotifyqueue.c $TARGET/include/glib-2.0/gobject
+install -v glib/glib-object.h $TARGET/include/glib-2.0
+install -v glib/glib.h $TARGET/include/glib-2.0
+install -v gmodule/gmodule.h $TARGET/include/glib-2.0
+install -v glibconfig.h $TARGET/lib/glib-2.0/include/
+
+for glibh in glib/g*.h; do
+  case "$glibh" in
+    */glib.h|*/glib-object.h) ;;
+    *) install -v $glibh $TARGET/include/glib-2.0/glib ;;
+  esac
+done
+
+for gmodh in gmodule/g*.h; do
+  case "$gmodh" in
+    */gmodule.h) ;;
+    *) install -v $gmodh $TARGET/include/glib-2.0/gmodule ;;
+  esac
+done
+
+for gobjh in gobject/g*.h; do
+  install -v $gobjh $TARGET/include/glib-2.0/gobject
+done
+
+# vim:ts=2 sw=2 expandtab

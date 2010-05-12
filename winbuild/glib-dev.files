@@ -1,0 +1,5 @@
+include/*
+lib/*
+bin/glib*
+bin/gobject*
+bin/gtest*

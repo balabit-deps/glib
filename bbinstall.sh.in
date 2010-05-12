@@ -17,6 +17,7 @@ install -m 0755 -v gobject/glib-mkenums $TARGET/bin
 $find winbuild -name \*.pc | xargs -i% install -v % $TARGET/lib/pkgconfig
 
 $find . -name \*.lib | grep -E '/(glib|gobject|gthread|gmodule)-2' | xargs -i% install -v % $TARGET/lib
+install -v build/win32/dirent/dirent.lib $TARGET/lib
 mkdir -p \
   $TARGET/include/glib-2.0/gobject \
   $TARGET/include/glib-2.0/glib \
@@ -27,6 +28,7 @@ install -v glib/glib-object.h $TARGET/include/glib-2.0
 install -v glib/glib.h $TARGET/include/glib-2.0
 install -v gmodule/gmodule.h $TARGET/include/glib-2.0
 install -v glibconfig.h $TARGET/lib/glib-2.0/include/
+install -v build/win32/dirent/dirent.h $TARGET/include
 
 for glibh in glib/g*.h; do
   case "$glibh" in

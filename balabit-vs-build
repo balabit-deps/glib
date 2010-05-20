@@ -87,15 +87,22 @@ case "$cmd" in
         winbuild/gmodule-no-export-2.0.pc
     ;;
   make)
-    if [ "$ZBS_BUILDER_TYPE" = "win2" ]; then
     # kill variables declared by unix make with contents incompatible by nmake.
-      unset MAKE
-      unset MAKEFLAGS
-      unset MAKEDIR
+    unset MAKE
+    unset MAKEFLAGS
+    unset MAKEDIR
+
+    if [ -n "$ZWA_INSTALL_DIR" ]; then
+      export COMPILE_ENV="`cygpath -m $ZWA_INSTALL_DIR`"
+      export WINDEPS_ROOT=$COMPILE_ENV
+      PREFIX=$COMPILE_ENV
+    else
+      PREFIX=$COMPILE_ENV/dep
     fi
 
     if [ -z "$1" ]; then
-      export INCLUDE="$INCLUDE;`cygpath -m $COMPILE_ENV/dep/include`"
+      export INCLUDE="$INCLUDE;`cygpath -m $PREFIX/include`"
+      export LIB="$LIB;`cygpath -m $PREFIX/include`"
       nmake -nologo -f makefile.msc
     else
       case $1 in

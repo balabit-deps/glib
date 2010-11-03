@@ -1,3 +1,10 @@
+glib (2.14.6-5.syslogng32.1) syslogngdeps20; urgency=low
+
+  * Fixed tgz2 builder. Generates dynamic libraries on i386 builders.
+  * Bumped version to syslogng32.1.
+
+ -- Tamas Pal <folti@balabit.com>  Wed, 03 Nov 2010 11:35:29 +0100
+
 glib (2.14.6-5.syslogng30) syslogngdeps10; urgency=low
 
   * Updated build system.

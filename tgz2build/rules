@@ -25,7 +25,11 @@ ifneq (,$(findstring aix,$(ZBS_DIST)))
 endif
 
 ifneq (,$(findstring i386,$(ZBS_ARCH)))
-	CONFIGURE_OPTS+= --build=$(ZBS_ARCH)
+# need to force the architecture because uname reports amd64/x86_64 on the
+# linux builders, but it breaks FreeBSD/i386 ...
+	ifeq (linux,$(findstring linux,$(ZBS_DIST)))
+		CONFIGURE_OPTS+= --build=$(ZBS_ARCH)-unknown-linux-gnu
+	endif
 endif
 all: binary
 

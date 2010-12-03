@@ -43,6 +43,11 @@ $(STAMPDIR)/stamp-setup:
 configure: $(STAMPDIR)/stamp-configure
 $(STAMPDIR)/stamp-configure: $(STAMPDIR)/stamp-setup
 	$(SHELL) $(CONFIGURE_CMD)
+	# 64 bit mode is a bit perky on solaris, we has to use the 64 bit LD_LIBRARY_PATH...
+	if [ "$(ZBS_ARCH)" = "sparc64" ] && echo $(ZBS_DIST) | grep solaris >/dev/null; then \
+		sed -e 's/\<\(LD_LIBRARY_PATH\)\>/\1_64/' libtool > libtool.$$ && \
+		mv libtool.$$ libtool; \
+	fi
 	touch $@
 
 

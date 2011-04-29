@@ -1,3 +1,11 @@
+glib (2.14.6-5.syslogng41.1) syslogngdeps30; urgency=low
+
+  * syslog-ng-deps-3.0 release
+  * added support for Solaris/sparc64 builds.
+  * added upstream patches to allow building on gcc-4.4
+
+ -- Tamas Pal <folti@balabit.com>  Fri, 29 Apr 2011 12:42:27 +0200
+
 glib (2.14.6-5.syslogng32.1) syslogngdeps20; urgency=low
 
   * Fixed tgz2 builder. Generates dynamic libraries on i386 builders.

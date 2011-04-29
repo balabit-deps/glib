@@ -141,7 +141,7 @@ void    g_thread_init_with_errorcheck_mutexes (GThreadFunctions* vtable);
 GMutex* g_static_mutex_get_mutex_impl   (GMutex **mutex);
 
 #define g_static_mutex_get_mutex_impl_shortcut(mutex) \
-  (g_atomic_pointer_get ((gpointer*)(void*)mutex) ? *(mutex) : \
+  (g_atomic_pointer_get (mutex) ? *(mutex) : \
    g_static_mutex_get_mutex_impl (mutex))
 
 /* shorthands for conditional and unconditional function calls */
@@ -332,7 +332,7 @@ void                    g_once_init_leave       (volatile gsize *value_location,
 G_INLINE_FUNC gboolean
 g_once_init_enter (volatile gsize *value_location)
 {
-  if G_LIKELY (g_atomic_pointer_get ((void*volatile*) value_location) != NULL)
+  if G_LIKELY (g_atomic_pointer_get (value_location) != NULL)
     return FALSE;
   else
     return g_once_init_enter_impl (value_location);

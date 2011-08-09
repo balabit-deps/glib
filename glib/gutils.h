@@ -112,6 +112,14 @@ G_BEGIN_DECLS
 #  if __GNUC_PREREQ (4,2) && defined (__STDC_VERSION__) \
    && __STDC_VERSION__ >= 199901L
 #    define G_INLINE_FUNC extern __inline __attribute__ ((__gnu_inline__))
+/* OSX specific fixes taken from
+ * http://mmt.me.uk/blog/2009/07/07/ld-duplicate-symbol-_g_bit_nth_lsf-mac-osx-leoparddarwin/
+ * and http://trac.macports.org/ticket/13006
+ */
+#  elif defined (__APPLE__) && !defined(GLIB_COMPILATION) && !defined(GOBJECT_COMPILATION)
+#    define G_INLINE_FUNC inline
+#  elif defined (__APPLE__)
+#    define G_INLINE_FUNC static inline
 #  else
 #    define G_INLINE_FUNC extern __inline
 #  endif

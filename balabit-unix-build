@@ -3,7 +3,11 @@
 cmd=$1
 shift
 
-AM_VERSION=-1.7
+if [ "`uname -s`" = "Darwin" ];then
+    AM_VERSION=
+else
+    AM_VERSION=-1.7
+fi
 
 case "$cmd" in
   get-version)
@@ -20,11 +24,12 @@ case "$cmd" in
     set -x
     set -e
     touch README INSTALL
-    libtoolize --force --copy --install
+    libtoolize --force --copy --install --verbose
     aclocal${AM_VERSION} -I m4
     gtkdocize --copy
     # wipe out doc generation as it does not work on all platforms
     sed -i -e 's/^install-data-local:/no-\0/' gtk-doc.make
+    mkdir -p m4
 
     autoheader
     automake${AM_VERSION} --add-missing --copy  --force-missing --foreign
@@ -32,7 +37,37 @@ case "$cmd" in
 
     ;;
   configure)
-    ./configure $@
+    OPTIONS=`getopt -l help,prefix: 'p:' $*`
+    if [ $? -ne 0 ]; then
+      echo "$0: unknown flags..."
+      exit 1
+    fi
+
+    eval set -- "$OPTIONS"
+    while true ; do
+      _arg=$1
+
+      if [ -z "$_arg" ]; then
+        break
+      fi
+      case $1 in
+        --prefix|-p)
+          shift
+          TARGET="$1"
+          ;;
+      esac
+      shift
+    done
+    if [ "`uname -s`" = "Darwin" ]; then
+        OPTS="--disable-static --enable-shared --disable-gtk-doc --with-libiconv=gnu"
+        CFLAGS="$CFLAGS -I$TARGET/include"
+        export CFLAGS
+        CPPFLAGS="$CPPFLAGS -I$TARGET/include"
+        export CPPFLAGS
+
+    fi
+    echo $LDFLAGS
+    ./configure  --prefix "$TARGET" $OPTS $@
     ;;
   make)
     make $@

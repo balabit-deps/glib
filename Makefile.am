@@ -85,7 +85,6 @@ $(pkgconfig_DATA): config.status
 
 # install mkinstalldirs for glib-gettextize's benefit
 gettextdir = $(datadir)/glib-2.0/gettext
-gettext_SCRIPTS = mkinstalldirs
 
 # build documentation when doing distcheck
 DISTCHECK_CONFIGURE_FLAGS = --enable-debug --enable-gtk-doc --enable-man

@@ -4,7 +4,7 @@ ACLOCAL_AMFLAGS=-I m4
 
 AUTOMAKE_OPTIONS = 1.7
 
-SUBDIRS = . m4macros glib gobject gmodule gthread tests build po docs
+SUBDIRS = . m4macros glib gobject gmodule gthread tests build po
 
 bin_SCRIPTS = glib-gettextize
 

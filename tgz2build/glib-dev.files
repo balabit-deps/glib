@@ -1,5 +1,6 @@
 opt/syslog-ng/include/*
 opt/syslog-ng/lib/lib*.la*
+opt/syslog-ng/lib/*.dylib
 opt/syslog-ng/lib/glib-2.0/*
 opt/syslog-ng/lib/pkgconfig/*
 opt/syslog-ng/lib/*.s[l,o]

@@ -2,7 +2,11 @@
 STAMPDIR=winbuild/stamps
 STAGINGDIR=winbuild/staging
 
+ifneq (,$(findstring mingw,$(ZBS_BUILDER_TYPE)))
+BUILDCMD=./balabit-unix-build
+else
 BUILDCMD=./balabit-vs-build
+endif
 
 all: binary
 
@@ -16,11 +20,10 @@ $(STAMPDIR)/stamp-setup:
 	sleep 1
 
 configure: $(STAMPDIR)/stamp-configure
+$(STAMPDIR)/stamp-configure: setup
 	$(BUILDCMD) configure --prefix=$(ZBS_STAGE_DIR)
 	touch $@
 	sleep 1
-
-$(STAMPDIR)/stamp-configure: setup
 
 build:  $(STAMPDIR)/stamp-build
 $(STAMPDIR)/stamp-build: configure
@@ -41,4 +44,4 @@ clean:
 	rm -rf $(STAGINGDIR) || true
 	-$(BUILDCMD) make clean
 
-.PHONY: build binary-indep binary-arch binary install
+.PHONY: build binary-indep binary-arch binary install clean

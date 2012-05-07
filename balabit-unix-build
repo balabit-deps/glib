@@ -70,7 +70,18 @@ case "$cmd" in
     ./configure  --prefix "$TARGET" $OPTS $@
     ;;
   make)
-    make $@
+    case $1 in
+      check)
+        if [ "$ZBS_BUILDER_TYPE" = "mingw" ]; then
+          cd tests
+          make module-test.exe
+          PATH=../glib:../gmodule:$PATH ./module-test.exe
+        else
+          make $@
+        fi
+        ;;
+      *) make $@;;
+    esac
     ;;
   *)
     echo "Unknown command: $cmd"

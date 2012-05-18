@@ -841,6 +841,12 @@ case $ac_cv_sizeof_size_t in
   $ac_cv_sizeof_long) 
       glib_size_type=long
       ;;
+  $ac_cv_sizeof_long_long)
+      glib_size_type='long long'
+      ;;
+  $ac_cv_sizeof__int64)
+      glib_size_type='__int64'
+      ;;
   *)  AC_MSG_ERROR([No type matching size_t in size])
       ;;
 esac
@@ -2793,11 +2799,11 @@ $ac_cv_sizeof___int64)
   ;;
 esac
 glib_size_t=$ac_cv_sizeof_size_t
-glib_size_type_define=$glib_size_type
+glib_size_type_define="$glib_size_type"
 glib_void_p=$ac_cv_sizeof_long
 glib_long=$ac_cv_sizeof_void_p
 
-case $glib_size_type in
+case "$glib_size_type" in
 short)
   gsize_modifier='"h"'
   gsize_format='"hu"'
@@ -2816,6 +2822,12 @@ long)
   gssize_format='"li"'
   glib_msize_type='LONG'
   ;;
+"long long"|__int64)
+  gsize_modifier='"I64"'
+  gsize_format='"I64u"'
+  gssize_format='"I64i"'
+  glib_msize_type='INT64'
+  ;;
 esac
 
 gintbits=`expr $ac_cv_sizeof_int \* 8`
@@ -2823,9 +2835,41 @@ glongbits=`expr $ac_cv_sizeof_long \* 8`
 
 
 case $ac_cv_sizeof_void_p in
-$ac_cv_sizeof_int)  	glib_gpi_cast=''        glib_gpui_cast=''         ;;
-$ac_cv_sizeof_long) 	glib_gpi_cast='(glong)' glib_gpui_cast='(gulong)' ;;
-*) 			glib_unknown_void_p=yes ;;
+$ac_cv_sizeof_int)
+  glib_intptr_type_define=int
+  gintptr_modifier='""'
+  gintptr_format='"i"'
+  guintptr_format='"u"'
+  glib_gpi_cast=''
+  glib_gpui_cast=''
+  ;;
+$ac_cv_sizeof_long)
+  glib_intptr_type_define=long
+  gintptr_modifier='"l"'
+  gintptr_format='"li"'
+  guintptr_format='"lu"'
+  glib_gpi_cast='(glong)'
+  glib_gpui_cast='(gulong)'
+  ;;
+$ac_cv_sizeof_long_long)
+  glib_intptr_type_define='long long'
+  gintptr_modifier='"I64"'
+  gintptr_format='"I64i"'
+  guintptr_format='"I64u"'
+  glib_gpi_cast='(gint64)'
+  glib_gpui_cast='(guint64)'
+  ;;
+$ac_cv_sizeof___int64)
+  glib_intptr_type_define=__int64
+  gintptr_modifier='"I64"'
+  gintptr_format='"I64i"'
+  guintptr_format='"I64u"'
+  glib_gpi_cast='(gint64)'
+  glib_gpui_cast='(guint64)'
+  ;;
+*)
+  glib_unknown_void_p=yes
+  ;;
 esac
 
 

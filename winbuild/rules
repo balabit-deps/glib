@@ -2,8 +2,14 @@
 STAMPDIR=winbuild/stamps
 STAGINGDIR=winbuild/staging
 
+CONFIG_OPTS=
+ZBS_STAGE_DIR=$(STAGINGDIR)
 ifneq (,$(findstring mingw,$(ZBS_BUILDER_TYPE)))
 BUILDCMD=./balabit-unix-build
+CPPFLAGS += -Dint64=__int64
+ifneq (,$(build))
+CONFIG_OPTS += -- --build=$(build)
+endif
 else
 BUILDCMD=./balabit-vs-build
 endif
@@ -21,7 +27,7 @@ $(STAMPDIR)/stamp-setup:
 
 configure: $(STAMPDIR)/stamp-configure
 $(STAMPDIR)/stamp-configure: setup
-	$(BUILDCMD) configure --prefix=$(ZBS_STAGE_DIR)
+	$(BUILDCMD) configure --prefix=$(ZBS_STAGE_DIR) $(CONFIG_OPTS)
 	touch $@
 	sleep 1
 

@@ -21,7 +21,6 @@ case "$cmd" in
     ##
     ;;
   bootstrap)
-    set -x
     set -e
     touch README INSTALL
     libtoolize --force --copy --install --verbose
@@ -35,6 +34,7 @@ case "$cmd" in
     automake${AM_VERSION} --add-missing --copy  --force-missing --foreign
     autoconf --force  -i
 
+    find -name libtool -o -name ltmain.sh | xargs sed -i -e "s,'file format pe-i386.*\?','file format \(pei\*-i386\(\.\*architecture: i386\)\?|pe-arm-wince|pe-x86-64\)',"
     ;;
   configure)
     OPTIONS=`getopt -l help,prefix: 'p:' $*`
@@ -55,27 +55,30 @@ case "$cmd" in
           shift
           TARGET="$1"
           ;;
+        --)
+          shift
+          break
+          ;;
       esac
       shift
     done
-    if [ "`uname -s`" = "Darwin" ]; then
+    if [ "$ZBS_BUILDER_TYPE" = "mingw" ]; then
         OPTS="--disable-static --enable-shared --disable-gtk-doc --with-libiconv=gnu"
         CFLAGS="$CFLAGS -I$TARGET/include"
         export CFLAGS
         CPPFLAGS="$CPPFLAGS -I$TARGET/include"
         export CPPFLAGS
-
     fi
-    echo $LDFLAGS
     ./configure  --prefix "$TARGET" $OPTS $@
     ;;
   make)
+    export PATH="$PWD/glib/.libs:$PWD/gobject/.libs:$PWD/gmodule/.libs:$PWD/gthread/.libs:$PATH"
     case $1 in
       check)
         if [ "$ZBS_BUILDER_TYPE" = "mingw" ]; then
           cd tests
           make module-test.exe
-          PATH=../glib:../gmodule:$PATH ./module-test.exe
+          ./module-test.exe
         else
           make $@
         fi

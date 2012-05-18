@@ -61,11 +61,13 @@
 #include <direct.h>
 
 #ifdef __MINGW32__
-/* Mingw doesn't have prototypes for these */
+/* Mingw doesn't have prototypes for these
+Yes, it have now. - Folti
 int _wspawnvpe (int, const wchar_t *, const wchar_t **, const wchar_t **);
 int _wspawnvp (int, const wchar_t *, const wchar_t **);
 int _wspawnve (int, const wchar_t *, const wchar_t **, const wchar_t **);
 int _wspawnv (int, const wchar_t *, const wchar_t **);
+*/
 #endif
 
 #ifdef G_SPAWN_WIN32_DEBUG

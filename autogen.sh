@@ -88,7 +88,7 @@ touch README INSTALL
 
 libtoolize --force --copy --install || exit $?
 
-$ACLOCAL -I /opt/libtool/share/aclocal -I m4macros --verbose || exit $?
+$ACLOCAL -I m4 -I /opt/libtool/share/aclocal -I m4macros --verbose || exit $?
 
 gtkdocize --copy || exit $?
 

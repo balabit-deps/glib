@@ -1,24 +1,18 @@
-#!/bin/sh
+#!/bin/sh -ex
 
-ZWACONF=./.zwaconf
+ZWACONF=.zwaconf
 
 TARGET=
 
-set -e
-
-PERL_PATH=/usr/bin/perl
-
 if [ -f $ZWACONF ]; then
-  . $ZWACONF
+  . ./$ZWACONF
 fi
+
+ubuild=./balabit-unix-build
 
 if [ -z "$TARGET" ]; then
   TARGET=$PWD/out
 fi
-
-get_version(){
-      head -1 debian/changelog | sed -e 's/.*(\([^)]*\)).*/\1/'
-}
 
 sed_file() {
 
@@ -28,8 +22,6 @@ sed_file() {
 
         sed \
             -e "s,@TARGET@,${TARGET},g" \
-            -e "s,@PERL_PATH@,${PERL_PATH},g" \
-            -e "s/@GLIB_VERSION@/${GLIB_VERSION}/g" \
             -e "s/@VERSION@/${VERSION}/g" \
             $in > $out
         shift
@@ -45,86 +37,19 @@ case "$cmd" in
     ;;
   prepare-dist)
     VERSION=`get_version`
+    sed_file winbuild/build.bat
     ;;
   dist-exclude-list|build-exclude-list)
     echo "out obj *.aqt *.ncb *.suo *.vcproj.*.user"
     ;;
   bootstrap)
+    $ubuild bootstrap $@
     ;;
   configure)
-    OPTIONS=`getopt -l help,prefix: 'p:' $*`
-    if [ $? -ne 0 ]; then
-      echo "$0: unknown flags..."
-      exit 1
-    fi
-
-    eval set -- "$OPTIONS"
-    while true ; do
-      _arg=$1
-
-      if [ -z "$_arg" ]; then
-        break
-      fi
-      case $1 in
-        --prefix|-p)
-          shift
-          TARGET=`cygpath -u "$1"`
-          ;;
-      esac
-      shift
-    done
-    eval `grep -E '^GLIB_(MAJOR|MINOR|MICRO)_VERSION=' configure`
-    GLIB_VERSION=$GLIB_MAJOR_VERSION.$GLIB_MINOR_VERSION.$GLIB_MICRO_VERSION
-    VERSION=${GLIB_VERSION}w32-1
-    sed_file \
-        bbinstall.sh \
-        gobject/glib-mkenums \
-        winbuild/gmodule-export-2.0.pc \
-        winbuild/glib-2.0.pc \
-        winbuild/gthread-2.0.pc \
-        winbuild/gobject-2.0.pc \
-        winbuild/gmodule-2.0.pc \
-        winbuild/gmodule-no-export-2.0.pc
+    $ubuild configure $@
     ;;
   make)
-    # kill variables declared by unix make with contents incompatible by nmake.
-    unset MAKE
-    unset MAKEFLAGS
-    unset MAKEDIR
-
-    if [ -n "$ZWA_INSTALL_DIR" ]; then
-      export COMPILE_ENV="`cygpath -m $ZWA_INSTALL_DIR`"
-      export WINDEPS_ROOT=$COMPILE_ENV
-      PREFIX=$COMPILE_ENV
-    else
-      PREFIX=$COMPILE_ENV/dep
-    fi
-
-    if [ -z "$1" ]; then
-      export INCLUDE="$INCLUDE;`cygpath -m $PREFIX/include`"
-      export LIB="$LIB;`cygpath -m $PREFIX/include`"
-      nmake -nologo -f makefile.msc
-    else
-      case $1 in
-        clean)
-          /usr/bin/find . -name \*.obj -or -name \*.dll -or -name \*.map -or -name \*.manifest -or -name \*.pdb -o -name \*.exp -o -name \*ilk -o -name \*.idb -o -name \*.lib | xargs -r rm -f
-          ;;
-        check)
-          cd tests
-          nmake -nologo -f makefile.msc libmoduletestplugin_a.obj libmoduletestplugin_b.obj
-          nmake -nologo -f makefile.msc libmoduletestplugin_a.dll libmoduletestplugin_b.dll
-
-          nmake -nologo -f makefile.msc module-test.obj
-          nmake -nologo -f makefile.msc module-test.exe
-          PATH=../glib:../gmodule:$PATH
-          export PATH
-          [ -f module-test.exe ] && ./module-test.exe
-          ;;
-        install)
-          sh ./bbinstall.sh
-          ;;
-      esac
-    fi
+    $ubuild make $@
     ;;
   *)
     echo "Unknown command: $cmd"

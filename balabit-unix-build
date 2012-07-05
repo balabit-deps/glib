@@ -1,13 +1,7 @@
-#!/bin/sh -e
+#!/bin/sh -ex
 
 cmd=$1
 shift
-
-if [ "`uname -s`" = "Darwin" ];then
-    AM_VERSION=
-else
-    AM_VERSION=-1.7
-fi
 
 case "$cmd" in
   get-version)
@@ -23,18 +17,18 @@ case "$cmd" in
   bootstrap)
     set -e
     touch README INSTALL
+    mkdir -p m4
     libtoolize --force --copy --install --verbose
     aclocal${AM_VERSION} -I m4
-    gtkdocize --copy
+    gtkdocize --copy || true
     # wipe out doc generation as it does not work on all platforms
-    sed -i -e 's/^install-data-local:/no-\0/' gtk-doc.make
-    mkdir -p m4
+    sed -i -e 's/^install-data-local:/no-\0/' gtk-doc.make || true
 
     autoheader
     automake${AM_VERSION} --add-missing --copy  --force-missing --foreign
     autoconf --force  -i
 
-    find -name libtool -o -name ltmain.sh | xargs sed -i -e "s,'file format pe-i386.*\?','file format \(pei\*-i386\(\.\*architecture: i386\)\?|pe-arm-wince|pe-x86-64\)',"
+    find -name libtool -o -name ltmain.sh | xargs sed -i -e "s,'file format pe-i386.*\?','file format \(pei\*-i386\(\.\*architecture: i386\)\?|pe-arm-wince|pe-x86-64\)'," -e 's,cmd \/\/c,,'
     ;;
   configure)
     OPTIONS=`getopt -l help,prefix: 'p:' $*`

@@ -379,7 +379,8 @@ unescape_text_state_inside_text (UnescapeContext *ucontext,
           p = g_utf8_next_char (p);
           start = p;
         }
-      else if (*p == '\r')
+      else if ((*p == '\r') &&
+              ((!(ucontext->context->flags & G_MARKUP_DO_NOT_SKIP_CR_FROM_TEXT)) || normalize_attribute))
         {
           g_string_append_len (ucontext->str, start, p - start);
           g_string_append_c (ucontext->str, normalize_attribute ? ' ' : '\n');

@@ -2800,8 +2800,8 @@ $ac_cv_sizeof___int64)
 esac
 glib_size_t=$ac_cv_sizeof_size_t
 glib_size_type_define="$glib_size_type"
-glib_void_p=$ac_cv_sizeof_long
-glib_long=$ac_cv_sizeof_void_p
+glib_void_p=$ac_cv_sizeof_void_p
+glib_long=$ac_cv_sizeof_long
 
 case "$glib_size_type" in
 short)

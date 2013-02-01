@@ -48,7 +48,8 @@ typedef enum
 {
   G_MARKUP_DO_NOT_USE_THIS_UNSUPPORTED_FLAG = 1 << 0,
   G_MARKUP_TREAT_CDATA_AS_TEXT              = 1 << 1,
-  G_MARKUP_DO_NOT_SKIP_CR_FROM_TEXT         = 1 << 3
+  G_MARKUP_DO_NOT_SKIP_CR_FROM_TEXT         = 1 << 3,
+  G_MARKUP_DO_NOT_SKIP_TAB_FROM_ATTRIBUTES  = 1 << 4
 } GMarkupParseFlags;
 
 typedef struct _GMarkupParseContext GMarkupParseContext;

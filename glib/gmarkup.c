@@ -374,10 +374,17 @@ unescape_text_state_inside_text (UnescapeContext *ucontext,
         }
       else if (normalize_attribute && (*p == '\t' || *p == '\n'))
         {
-          g_string_append_len (ucontext->str, start, p - start);
-          g_string_append_c (ucontext->str, ' ');
-          p = g_utf8_next_char (p);
-          start = p;
+          if ((ucontext->context->flags & G_MARKUP_DO_NOT_SKIP_TAB_FROM_ATTRIBUTES) && (*p == '\t'))
+            {
+              p = g_utf8_next_char (p);
+            }
+          else
+            {
+              g_string_append_len (ucontext->str, start, p - start);
+              g_string_append_c (ucontext->str, ' ');
+              p = g_utf8_next_char (p);
+              start = p;
+            }
         }
       else if ((*p == '\r') &&
               ((!(ucontext->context->flags & G_MARKUP_DO_NOT_SKIP_CR_FROM_TEXT)) || normalize_attribute))

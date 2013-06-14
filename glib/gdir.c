@@ -33,6 +33,10 @@
 #include <dirent.h>
 #endif
 
+#ifdef _AIX // For 64 bit opendir()/readdir() variants on AIX
+#include <sys/dir.h>
+#endif
+
 #include "glib.h"
 #include "gdir.h"
 
@@ -44,6 +48,8 @@ struct _GDir
 {
 #ifdef G_OS_WIN32
   _WDIR *wdirp;
+#elif defined(_AIX)
+  DIR64 *dirp;
 #else
   DIR *dirp;
 #endif
@@ -51,6 +57,12 @@ struct _GDir
   gchar utf8_buf[FILENAME_MAX*4];
 #endif
 };
+
+#ifdef _AIX
+#define opendir opendir64
+#define readdir readdir64
+#define closedir closedir64
+#endif
 
 /**
  * g_dir_open:
@@ -179,6 +191,8 @@ g_dir_read_name (GDir *dir)
 #ifdef G_OS_WIN32
   gchar *utf8_name;
   struct _wdirent *wentry;
+#elif defined(_AIX)
+  struct dirent64 *entry;
 #else
   struct dirent *entry;
 #endif

@@ -1,3 +1,9 @@
+glib (2.14.6-5.syslogng51.1) syslogngdeps51; urgency=low
+
+  * release for syslog-ng-5.1
+
+ -- Laszlo Budai <lbudai@balabit.hu>  Tue, 04 Mar 2014 12:05:39 +0100
+
 glib (2.14.6-5.syslogng50.1) syslogngdeps50; urgency=low
 
   * gdir: Added 64bit opendir/readdir API support for AIX.

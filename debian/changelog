@@ -1,3 +1,9 @@
+glib (2.14.6-5.syslogng51.2) syslogngdeps51; urgency=low
+
+  * no need for msvc-compat
+
+ -- Laszlo Budai <lbudai@balabit.hu>  Wed, 05 Mar 2014 13:40:42 +0100
+
 glib (2.14.6-5.syslogng51.1) syslogngdeps51; urgency=low
 
   * release for syslog-ng-5.1

@@ -25,3 +25,6 @@ COPYING
 INSTALL
 README
 config.status.lineno
+b
+m4
+*.pyc

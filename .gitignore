@@ -28,3 +28,4 @@ config.status.lineno
 b
 m4
 *.pyc
+test-driver

@@ -25,7 +25,8 @@ COPYING
 INSTALL
 README
 config.status.lineno
-b
 m4
 *.pyc
 test-driver
+sbuild.py*
+sbuild/build

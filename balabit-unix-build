@@ -63,6 +63,7 @@ case "$cmd" in
         CPPFLAGS="$CPPFLAGS -I$TARGET/include"
         export CPPFLAGS
     fi
+    CFLAGS="$CFLAGS -g"
     ./configure  --prefix "$TARGET" $OPTS $@
     ;;
   make)

@@ -1,3 +1,9 @@
+glib (2.14.6-5.syslogng54.1) syslogng54; urgency=low
+
+  * add debug symbols to the binaries
+
+ -- jviktor <jviktor@balabit.com>  Wed, 15 Jul 2015 15:24:21 +0200
+
 glib (2.14.6-5.syslogng53.2) syslogng53; urgency=low
 
   * release for syslog-ng-5.3.0alpha2

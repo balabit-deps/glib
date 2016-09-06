@@ -30,3 +30,4 @@ m4
 test-driver
 sbuild.py*
 sbuild/build
+po

@@ -29,5 +29,6 @@ m4
 *.pyc
 test-driver
 sbuild.py*
-sbuild/build
+sbuild/*
+!sbuild/config.yml
 po

@@ -45,7 +45,6 @@ endif
 BUILT_SOURCES = galias.h galiasdef.c
 
 MIRRORING_TAB_SOURCES = 			\
-	glib-mirroring-tab/Makefile 		\
 	glib-mirroring-tab/gen-mirroring-tab.c	\
 	glib-mirroring-tab/packtab.h		\
 	glib-mirroring-tab/packtab.c

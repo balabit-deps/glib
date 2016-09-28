@@ -53,8 +53,7 @@ BUILT_EXTRA_DIST = 		\
 	README			\
 	INSTALL			\
 	glibconfig.h.win32	\
-	config.h.win32		\
-	gtk-doc.make
+	config.h.win32
 
 configexecincludedir = $(libdir)/glib-2.0/include
 #configexecinclude_DATA = glibconfig.h

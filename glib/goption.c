@@ -42,6 +42,9 @@
 #define OPTIONAL_ARG(entry) ((entry)->arg == G_OPTION_ARG_CALLBACK &&  \
                        (entry)->flags & G_OPTION_FLAG_OPTIONAL_ARG)
 
+typedef gint (*StrCmpFunc)(const gchar *s1, const gchar *s2);
+typedef gint (*StrNCmpFunc)(const gchar *s1, const gchar *s2, gsize n);
+
 typedef struct 
 {
   GOptionArg arg_type;
@@ -1153,13 +1156,22 @@ parse_short_option (GOptionContext *context,
 		    gint           *argc,
 		    gchar        ***argv,
 		    GError        **error,
-		    gboolean       *parsed)
+		    gboolean       *parsed,
+		    gboolean        ignore_case)
 {
   gint j;
+  gchar short_name;
+
+  if (ignore_case)
+    arg = g_ascii_tolower (arg);
+
     
   for (j = 0; j < group->n_entries; j++)
     {
-      if (arg == group->entries[j].short_name)
+      short_name = ignore_case ? g_ascii_tolower (group->entries[j].short_name)
+                   : group->entries[j].short_name;
+
+      if (arg == short_name)
 	{
 	  gchar *option_name;
 	  gchar *value = NULL;
@@ -1235,7 +1247,9 @@ parse_long_option (GOptionContext *context,
 		   gint           *argc,
 		   gchar        ***argv,
 		   GError        **error,
-		   gboolean       *parsed)
+		   gboolean       *parsed,
+		   StrCmpFunc      cmp_func,
+		   StrNCmpFunc     ncmp_func)
 {
   gint j;
 
@@ -1248,7 +1262,7 @@ parse_long_option (GOptionContext *context,
 	continue;
 
       if (NO_ARG (&group->entries[j]) &&
-	  strcmp (arg, group->entries[j].long_name) == 0)
+         cmp_func (arg, group->entries[j].long_name) == 0)
 	{
 	  gchar *option_name;
 
@@ -1262,9 +1276,9 @@ parse_long_option (GOptionContext *context,
 	}
       else
 	{
-	  gint len = strlen (group->entries[j].long_name);
-	  
-	  if (strncmp (arg, group->entries[j].long_name, len) == 0 &&
+	  gint len = strlen (group->entries[j].long_name); 
+
+	  if (ncmp_func (arg, group->entries[j].long_name, len) == 0 &&
 	      (arg[len] == '=' || arg[len] == 0))
 	    {
 	      gchar *value = NULL;
@@ -1450,49 +1464,18 @@ free_pending_nulls (GOptionContext *context,
   context->pending_nulls = NULL;
 }
 
-/**
- * g_option_context_parse:
- * @context: a #GOptionContext
- * @argc: a pointer to the number of command line arguments
- * @argv: a pointer to the array of command line arguments
- * @error: a return location for errors 
- * 
- * Parses the command line arguments, recognizing options
- * which have been added to @context. A side-effect of 
- * calling this function is that g_set_prgname() will be
- * called.
- *
- * If the parsing is successful, any parsed arguments are
- * removed from the array and @argc and @argv are updated 
- * accordingly. A '--' option is stripped from @argv
- * unless there are unparsed options before and after it, 
- * or some of the options after it start with '-'. In case 
- * of an error, @argc and @argv are left unmodified. 
- *
- * If automatic <option>--help</option> support is enabled
- * (see g_option_context_set_help_enabled()), and the 
- * @argv array contains one of the recognized help options,
- * this function will produce help output to stdout and
- * call <literal>exit (0)</literal>.
- *
- * Note that function depends on the 
- * <link linkend="setlocale">current locale</link> for 
- * automatic character set conversion of string and filename
- * arguments.
- * 
- * Return value: %TRUE if the parsing was successful, 
- *               %FALSE if an error occurred
- *
- * Since: 2.6
- **/
-gboolean
-g_option_context_parse (GOptionContext   *context,
-			gint             *argc,
-			gchar          ***argv,
-			GError          **error)
+static gboolean
+context_parse (GOptionContext   *context,
+               gint             *argc,
+               gchar          ***argv,
+               GError          **error,
+               gboolean          ignore_case)
 {
   gint i, j, k;
   GList *list;
+
+  StrCmpFunc cmp_func = ignore_case ? g_ascii_strcasecmp : strcmp;
+  StrNCmpFunc ncmp_func = ignore_case ? g_ascii_strncasecmp : strncmp;
 
   /* Set program name */
   if (!g_get_prgname())
@@ -1562,11 +1545,11 @@ g_option_context_parse (GOptionContext   *context,
 		  /* Handle help options */
 		  if (context->help_enabled)
 		    {
-		      if (strcmp (arg, "help") == 0)
+		      if (cmp_func (arg, "help") == 0)
 			print_help (context, TRUE, NULL);
-		      else if (strcmp (arg, "help-all") == 0)
-			print_help (context, FALSE, NULL);		      
-		      else if (strncmp (arg, "help-", 5) == 0)
+		      else if (cmp_func (arg, "help-all") == 0)
+			print_help (context, FALSE, NULL);
+		      else if (ncmp_func (arg, "help-", 5) == 0)
 			{
 			  GList *list;
 			  
@@ -1576,9 +1559,10 @@ g_option_context_parse (GOptionContext   *context,
 			    {
 			      GOptionGroup *group = list->data;
 			      
-			      if (strcmp (arg + 5, group->name) == 0)
-				print_help (context, FALSE, group);		      			      
-			      
+
+			      if (cmp_func (arg + 5, group->name) == 0)
+				print_help (context, FALSE, group);
+
 			      list = list->next;
 			    }
 			}
@@ -1586,7 +1570,7 @@ g_option_context_parse (GOptionContext   *context,
 
 		  if (context->main_group &&
 		      !parse_long_option (context, context->main_group, &i, arg,
-					  FALSE, argc, argv, error, &parsed))
+					  FALSE, argc, argv, error, &parsed, cmp_func, ncmp_func))
 		    goto fail;
 
 		  if (parsed)
@@ -1597,11 +1581,10 @@ g_option_context_parse (GOptionContext   *context,
 		  while (list)
 		    {
 		      GOptionGroup *group = list->data;
-		      
-		      if (!parse_long_option (context, group, &i, arg, 
-					      FALSE, argc, argv, error, &parsed))
+
+		      if (!parse_long_option (context, group, &i, arg,
+					      FALSE, argc, argv, error, &parsed, cmp_func, ncmp_func))
 			goto fail;
-		      
 		      if (parsed)
 			break;
 		      
@@ -1620,11 +1603,11 @@ g_option_context_parse (GOptionContext   *context,
 		      while (list)
 			{
 			  GOptionGroup *group = list->data;
-			  
-			  if (strncmp (group->name, arg, dash - arg) == 0)
+
+			  if (ncmp_func (group->name, arg, dash - arg) == 0)
 			    {
 			      if (!parse_long_option (context, group, &i, dash + 1,
-						      TRUE, argc, argv, error, &parsed))
+						      TRUE, argc, argv, error, &parsed, cmp_func, ncmp_func))
 				goto fail;
 			      
 			      if (parsed)
@@ -1654,7 +1637,7 @@ g_option_context_parse (GOptionContext   *context,
 		      if (context->main_group &&
 			  !parse_short_option (context, context->main_group,
 					       i, &new_i, arg[j],
-					       argc, argv, error, &parsed))
+					       argc, argv, error, &parsed, ignore_case))
                         goto fail;
 		      if (!parsed)
 			{
@@ -1664,7 +1647,7 @@ g_option_context_parse (GOptionContext   *context,
 			    {
 			      GOptionGroup *group = list->data;
 			      if (!parse_short_option (context, group, i, &new_i, arg[j],
-						       argc, argv, error, &parsed))
+						       argc, argv, error, &parsed, ignore_case))
 				goto fail;
 			      if (parsed)
 				break;
@@ -1804,6 +1787,59 @@ g_option_context_parse (GOptionContext   *context,
   free_pending_nulls (context, FALSE);
 
   return FALSE;
+}
+
+gboolean
+g_option_context_parse_case_insensitive (GOptionContext   *context,
+                                         gint             *argc,
+                                         gchar          ***argv,
+                                         GError          **error)
+{
+  return context_parse (context, argc, argv, error, TRUE);
+}
+
+/**
+ * g_option_context_parse:
+ * @context: a #GOptionContext
+ * @argc: a pointer to the number of command line arguments
+ * @argv: a pointer to the array of command line arguments
+ * @error: a return location for errors
+ *
+ * Parses the command line arguments, recognizing options
+ * which have been added to @context. A side-effect of
+ * calling this function is that g_set_prgname() will be
+ * called.
+ *
+ * If the parsing is successful, any parsed arguments are
+ * removed from the array and @argc and @argv are updated
+ * accordingly. A '--' option is stripped from @argv
+ * unless there are unparsed options before and after it,
+ * or some of the options after it start with '-'. In case
+ * of an error, @argc and @argv are left unmodified.
+ *
+ * If automatic <option>--help</option> support is enabled
+ * (see g_option_context_set_help_enabled()), and the
+ * @argv array contains one of the recognized help options,
+ * this function will produce help output to stdout and
+ * call <literal>exit (0)</literal>.
+ *
+ * Note that function depends on the
+ * <link linkend="setlocale">current locale</link> for
+ * automatic character set conversion of string and filename
+ * arguments.
+ *
+ * Return value: %TRUE if the parsing was successful,
+ *               %FALSE if an error occurred
+ *
+ * Since: 2.6
+ **/
+gboolean
+g_option_context_parse (GOptionContext   *context,
+                        gint             *argc,
+                        gchar          ***argv,
+                        GError          **error)
+{
+  return context_parse (context, argc, argv, error, FALSE);
 }
 				   
 /**

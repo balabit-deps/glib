@@ -1870,6 +1870,9 @@ extern __typeof (g_option_context_new) IA__g_option_context_new __attribute((vis
 extern __typeof (g_option_context_parse) IA__g_option_context_parse __attribute((visibility("hidden")));
 #define g_option_context_parse IA__g_option_context_parse
 
+extern __typeof (g_option_context_parse_case_insensitive) IA__g_option_context_parse_case_insensitive __attribute((visibility("hidden")));
+#define g_option_context_parse_case_insensitive IA__g_option_context_parse_case_insensitive
+
 extern __typeof (g_option_context_set_description) IA__g_option_context_set_description __attribute((visibility("hidden")));
 #define g_option_context_set_description IA__g_option_context_set_description
 

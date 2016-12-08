@@ -1873,6 +1873,9 @@ extern __typeof (g_option_context_new) g_option_context_new __attribute((alias("
 #undef g_option_context_parse 
 extern __typeof (g_option_context_parse) g_option_context_parse __attribute((alias("IA__g_option_context_parse"), visibility("default")));
 
+#undef g_option_context_parse_case_insensitive
+extern __typeof (g_option_context_parse_case_insensitive) g_option_context_parse_case_insensitive __attribute((alias("IA__g_option_context_parse_case_insensitive"), visibility("default")));
+
 #undef g_option_context_set_description 
 extern __typeof (g_option_context_set_description) g_option_context_set_description __attribute((alias("IA__g_option_context_set_description"), visibility("default")));
 

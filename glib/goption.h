@@ -118,6 +118,10 @@ gboolean        g_option_context_parse            (GOptionContext      *context,
 						   gint                *argc,
 						   gchar             ***argv,
 						   GError             **error);
+gboolean        g_option_context_parse_case_insensitive (GOptionContext      *context,
+                                                         gint                *argc,
+                                                         gchar             ***argv,
+                                                         GError             **error);
 void            g_option_context_set_translate_func (GOptionContext     *context,
 						     GTranslateFunc      func,
 						     gpointer            data,

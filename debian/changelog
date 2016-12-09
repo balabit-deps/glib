@@ -1,3 +1,9 @@
+glib (2.14.6-5.syslogng60.1) syslogng60; urgency=medium
+
+  * add incase sensitive arg parsing
+
+ -- jviktor <jviktor@devel57>  Fri, 09 Dec 2016 09:11:04 +0100
+
 glib (2.14.6-5.syslogng54.1) syslogng54; urgency=low
 
   * add debug symbols to the binaries

@@ -2,6 +2,7 @@ name: glib
 builder:
   name: AutotoolsBuilder
   flags: "make-dist-need-make"
+  configure_options: --disable-static --enable-shared --disable-gtk-doc --with-libiconv=gnu
 platforms:
   - aix-6.1/powerpc
   - hpux-11v2/ia64
